@@ -20,28 +20,28 @@ Build Log(?):
 	- Learned CRUD(?) operations from Udacity's MongoDB course
 
 Plans
-X. Implement White/Black Deck
+A. Implement White/Black Deck
 		- Figure out a way to mass import the different expansions so I don't spend most of my time hardcoding the card strings
 		- Or create random strings to serve as placeholder so I can work on Routes and Game logic
 
-X. Add Routes
+B. Add Routes
 		- '/:table' routes that dynamically create tables people can join
 		- these are discarded when no users are present
 		- starts game when players > n || players are ready via 'ready button'
 
-X. Add Game Logic
-		- Black Card is randomized
-		- players emit 'draw card' event at the start of the game and after submit
-		- server 'deals card' by assigning a random card from deck to the requesting player (pop/push? how?)
-		- players can submit 'wildcards' (not interested in storing them)
-				-Honestly the lamest part about Cards against Humanity is when your hand is tamer than your mind.
-		- Server? cycles through white cards, displaying the combined black/white response in the DOM.
+C. Add Game Logic
+	- Black Card is randomized
+	- players emit 'draw card' event at the start of the game and after submit
+	- server 'deals card' by assigning a random card from deck to the requesting player (pop/push? how?)
+	- players can submit 'wildcards' (not interested in storing them)
+		-Honestly the lamest part about Cards against Humanity is when your hand is tamer than your mind.
+	- Server? cycles through white cards, displaying the combined black/white response in the DOM.
 
-X. Finish Styling/Refactor
-		- Styled so that all mobile devices can display and interact smoothly
+D. Finish Styling/Refactor
+	- Styled so that all mobile devices can display and interact smoothly
 
-X. NiceToHaves
-		- Private Tables
-		- Democracy/Czar
+E. NiceToHaves
+	- Private Tables
+	- Democracy/Czar
 
-X. Play
+F. Play
