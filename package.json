@@ -1,0 +1,19 @@
+{
+  "name": "nodevshumanity",
+  "version": "1.0.0",
+  "description": "Learn Node with Code!",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.10.5",
+    "ejs": "^1.0.0",
+    "mongodb": "^1.4.23",
+    "request": "^2.51.0",
+    "socket.io": "^1.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eli Xian, elixian@gmail.com",
+  "license": "ISC"
+}

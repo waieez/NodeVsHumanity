@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Node vs Humanity</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<link rel='stylesheet' href="style.css">
+		<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+	</head>
+	<body>
+		<div><%= 'Hello ' + name + ', here are your cards: '%></div>
+		<form>
+			<ul>
+				<% cards.forEach(function(card){ %>
+					<li><%= card %></li>
+				<% }) %>
+			</ul>
+			<input id='wildcard'/>
+			<input type='submit' id='submit'/>
+		</form>
+
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+			var server = io.connect('http://localhost:3000');
+
+			server.on('connect', function(data){
+				var username = prompt('Username: ');
+				server.emit('join', username);
+			});
+
+			server.on('message', function(data){
+				$('ul').append('<li>'+data.message+'</li>');
+			});
+
+			$('#submit').on('click', function(event){
+				event.preventDefault();
+				var wildcard = $('#wildcard').val();
+				console.log(wildcard);
+				server.emit('reply', wildcard);
+				$('#wildcard').val('');
+			});
+		</script>
+	</body>
+</html>
