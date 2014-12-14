@@ -9,11 +9,19 @@ router.route('/')
 	}) // or .params
 	.get(function(req, res){
 		//figure out how to pass info from db or info from event triggers
-		res.locals = {name: 'shitfucker', cards: cards }
 		res.render('index.html.ejs');	
 	})
 	.post(function(req, res){});
 
 //router.route('/:dynamic') access with request.params.':dynamic'
+
+router.route('/:table')
+	.all(function(req, res, next){
+		next();
+	})
+	.get(function(req, res){
+		res.render('index.html.ejs');	
+	})
+	.post(function(req, res){});
 
 module.exports = router;

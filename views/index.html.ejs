@@ -7,37 +7,54 @@
 		<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
 	</head>
 	<body>
-		<div><%= 'Hello ' + name + ', here are your cards: '%></div>
+		<div><%= 'Hello, here are your cards: '%></div>
+		<ul>
+		</ul>
 		<form>
-			<ul>
-				<% cards.forEach(function(card){ %>
-					<li><%= card %></li>
-				<% }) %>
-			</ul>
-			<input id='wildcard'/>
+			<input id='wildcard'/><br/>
 			<input type='submit' id='submit'/>
 		</form>
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script>
-			var server = io.connect('http://localhost:3000');
+			var path = window.location.pathname;
+			var server = io.connect('http://localhost');
+			var username;
+			var card;
 
 			server.on('connect', function(data){
-				var username = prompt('Username: ');
-				server.emit('join', username);
+				username = prompt('Halt! Who Goes There?!');
+				var info = {'path': path, 'username': username};
+				server.emit('join', info)
 			});
 
-			server.on('message', function(data){
-				$('ul').append('<li>'+data.message+'</li>');
+		  server.on('welcome', function (message){
+		  	console.log(message);
+		  });
+
+			server.on('message', function (doc){
+				$('ul').append('<li>'+doc.message+'</li>');
 			});
 
-			$('#submit').on('click', function(event){
+			$('ul').on('click', 'li', function(event){
+				card = $(this).text();
+				$(this).remove();
+				$('form').trigger('submit');
+				var doc = {'path': path, username:'username'} 
+
+				// for now a 'filler' card is given via server.message event
+				server.emit('draw', doc);
+			});
+
+			$('form').on('submit', function(event){
 				event.preventDefault();
-				var wildcard = $('#wildcard').val();
-				console.log(wildcard);
-				server.emit('reply', wildcard);
+				card = card || $('#wildcard').val();
+				//server.emit('reply', {'username': username, 'path': path, 'message': card});
+				console.log(card);
+				card = '';
 				$('#wildcard').val('');
 			});
+
 		</script>
 	</body>
 </html>
