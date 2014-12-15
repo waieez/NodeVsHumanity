@@ -24,11 +24,14 @@ Build Log(?):
 	- Perhaps route/table implementation mostly done with express/sockets alone.
 	- Worked out key player interaction, Card Submission/Draw
 
+5. Seed DB
+	- card.json from https://github.com/samurailink3/hangouts-against-humanity/wiki/Cards
+	- Had to tweak some character escaping to make it work with the node parser.
+
 Plans:
 
 1. Implement White/Black Deck
-	- Figure out a way to mass import the different expansions so I don't spend most of my time hardcoding the card strings
-	- Or create random strings to serve as placeholder so I can work on Game logic
+	- Fetch White/Black decks for players
 
 2. Add Routes
 	- these are discarded when no users are present
