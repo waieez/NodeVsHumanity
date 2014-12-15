@@ -33,7 +33,7 @@
 		  });
 
 			server.on('message', function (doc){
-				$('ul').append('<li>'+doc.message+'</li>');
+				$('ul').append('<li>'+doc.text+'</li>');
 			});
 
 			$('ul').on('click', 'li', function(event){
