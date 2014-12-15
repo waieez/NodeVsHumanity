@@ -13,9 +13,7 @@ var express = require('express'),
 var uri = 'mongodb://onepiece:luffylaw@ds063240.mongolab.com:63240/waieez';
 
 //Cache the Decks
-mongo.connect(uri, function (){
-	console.log('connected to mongo @ ' + uri);
-});
+
 
 //IO event driven DOM manipulation
 io.on('connection', function (client){
@@ -39,7 +37,7 @@ io.on('connection', function (client){
 		//console.log(client.id);
 
 		//fetch from db
-		coll.find({expansion:"Base", cardType: "A", id: {"$lte":20}},{_id: 0, text:1}).each(function (err, doc){
+		coll.find({expansion:"Base", cardType: "A"},{_id: 0, text:1}).each(function (err, doc){
 			if (err) throw err.message;
 			client.emit('message', doc);// for now everyone gets the same set
 		})
@@ -49,10 +47,10 @@ io.on('connection', function (client){
 
 	client.on('reply', function (data){
 		//collection.insert(docs, options, [callback]);
-		coll.insert(data, {w:1}, function(err, obj){
-			if (err) throw err.message;
-			console.log('String inserted into DB!');
-		})
+		//coll.insert(data, {w:1}, function(err, obj){
+			//if (err) throw err.message;
+			//console.log('String inserted into DB!');
+		//})
 		io.to(data.path).emit('message', data);
 	});
 
@@ -71,6 +69,9 @@ app.use(express.static('static'));
 app.use('/', tables);
 
 //Start up server
-server.listen(3000, function(){
-	console.log('listen @ 3000..');	
+mongo.connect(uri, function (){
+	console.log('connected to mongo @ ' + uri);
+	server.listen(3000, function(){
+		console.log('listen @ 3000..');	
+	});
 });

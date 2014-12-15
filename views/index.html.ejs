@@ -7,7 +7,8 @@
 		<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
 	</head>
 	<body>
-		<div><%= 'Hello, here are your cards: '%></div>
+		<div class='black'></div>
+		<div class='hand'><%= 'Hello, here are your cards: '%></div>
 		<ul>
 		</ul>
 		<form>
@@ -29,6 +30,7 @@
 			});
 
 		  server.on('welcome', function (message){
+		  	$('.black').text(message);
 		  	console.log(message);
 		  });
 
