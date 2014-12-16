@@ -4,6 +4,10 @@
 	color: white;
 }
 
+.hidden {
+	visibility: hidden;
+}
+
 li:hover {
 	background-color: red;
 }

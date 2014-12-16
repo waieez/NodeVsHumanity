@@ -28,19 +28,18 @@ Build Log(?):
 	- card.json from https://github.com/samurailink3/hangouts-against-humanity/wiki/Cards
 	- Had to tweak some character escaping to make it work with the node parser.
 
+6. Game Logic
+	- Changed behavior to have clients recieve same answer deck, which is hidden and shuffled clientside.
+	- Hand is populated from client's deck on round start and on submit/draw event.
+
 Plans:
 
-1. Implement White/Black Deck
-	- Fetch White/Black decks for players
-
 2. Add Routes
-	- these are discarded when no users are present
 	- starts game when players > n || players are ready via 'ready button'
 
 3. Add Game Logic
 	- Black Card is randomized
 	- players emit 'draw card' event at the start of the game
-	- server 'deals card' by assigning a random card from deck to the requesting player (pop/push? how?)
 	- Server? cycles through white cards, displaying the combined black/white response in the DOM.
 
 4. Finish Styling/Refactor

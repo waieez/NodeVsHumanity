@@ -8,54 +8,83 @@
 	</head>
 	<body>
 		<div class='black'></div>
-		<div class='hand'><%= 'Hello, here are your cards: '%></div>
-		<ul>
+		<div><%= 'Hello, here are your cards: '%></div>
+		<ul class ='hand'>
 		</ul>
 		<form>
 			<input id='wildcard'/><br/>
 			<input type='submit' id='submit'/>
 		</form>
-
+		<div class='hidden'>
+			<ul class='responses'></ul>
+			<ul class='deck'></ul>
+		</div>
 		<script src="/socket.io/socket.io.js"></script>
-		<script>
+		<script> // perhaps put this all in a file and load it
+
 			var path = window.location.pathname;
 			var server = io.connect('http://localhost');
 			var username;
 			var card;
-
+		//Listeners	
+			//Handshake
 			server.on('connect', function(data){
 				username = prompt('Halt! Who Goes There?!');
 				var info = {'path': path, 'username': username};
-				server.emit('join', info)
+				server.emit('join', info);
 			});
 
 		  server.on('welcome', function (message){
-		  	$('.black').text(message);
 		  	console.log(message);
 		  });
 
-			server.on('message', function (doc){
-				$('ul').append('<li>'+doc.text+'</li>');
+		  //Recieve and randomize white deck clientside
+			server.on('pass deck', function (deck){
+				shuffle(deck);
+				deck.forEach(function (card){
+					if (card) $('.deck').append('<li>'+card.text+'</li>');
+				})
 			});
 
-			$('ul').on('click', 'li', function(event){
+			//Populate Response
+			server.on('player answer', function (card){
+				$('.responses').append('<li val="'+card.username+'">'+card.card+'</li>');
+			});
+
+		//Emitters	
+			//Trigger Submit/Emit Card to Server, reveal top card of hidden white deck if submission is from hand
+			$('.hand').on('click', 'li', function(event){
 				card = $(this).text();
 				$(this).remove();
 				$('form').trigger('submit');
-				var doc = {'path': path, username:'username'} 
 
-				// for now a 'filler' card is given via server.message event
-				server.emit('draw', doc);
+				var $topCard = $('.deck li:first-of-type');
+				$('.hand').append('<li>'+$topCard.text()+"</li>");
+				$topCard.remove();
 			});
 
 			$('form').on('submit', function(event){
 				event.preventDefault();
 				card = card || $('#wildcard').val();
-				//server.emit('reply', {'username': username, 'path': path, 'message': card});
-				console.log(card);
+				server.emit('submit card', {'username': username, 'path': path, 'card': card});
 				card = '';
 				$('#wildcard').val('');
 			});
+
+			//Fisher Yates Shuffle
+			var shuffle = function (array) {
+				var m = array.length, t, i;
+				// While there remain elements to shuffle…
+				while (m) {
+					// Pick a remaining element…
+					i = Math.floor(Math.random() * m--);
+					// And swap it with the current element.
+					t = array[m];
+					array[m] = array[i];
+					array[i] = t;
+				}
+				return array;
+			}
 
 		</script>
 	</body>
