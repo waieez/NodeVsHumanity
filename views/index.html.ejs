@@ -7,7 +7,7 @@
 		<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
 	</head>
 	<body>
-		<div class='black'></div>
+		<div class='black'>Placeholder</div>
 		<div><%= 'Hello, here are your cards: '%></div>
 		<ul class ='hand'>
 		</ul>
@@ -26,6 +26,8 @@
 			var server = io.connect('http://localhost');
 			var username;
 			var card;
+			var czar;
+			
 		//Listeners	
 			//Handshake
 			server.on('connect', function(data){
@@ -34,42 +36,89 @@
 				server.emit('join', info);
 			});
 
-		  server.on('welcome', function (message){
+		  server.on('Server Message', function (message){
 		  	console.log(message);
 		  });
 
 		  //Recieve and randomize white deck clientside
 			server.on('pass deck', function (deck){
 				shuffle(deck);
+				var hand = 0
 				deck.forEach(function (card){
-					if (card) $('.deck').append('<li>'+card.text+'</li>');
+					if (hand < 7) {
+						$('.hand').append('<li>'+card.text+'</li>');
+						hand++
+					} else if (card) {
+						$('.deck').append('<li>'+card.text+'</li>');
+					}
 				})
+				ready();
+				disable();
 			});
+
+			//Start!
+			server.on('start', function (data){
+				$('.hand').on('click');
+				$('form').on('submit.card');
+				console.log(data);
+			});
+
+			//Wait for others
+			server.on('waiting', function (data){
+				//do stuff while waiting
+			});
+
+			server.on('crown czar', function (data){
+				czar = true;
+				console.log(data);
+			});
+
+			//Someone Disconnects
+			//remove from everyone's object
 
 			//Populate Response
 			server.on('player answer', function (card){
 				$('.responses').append('<li val="'+card.username+'">'+card.card+'</li>');
 			});
 
-		//Emitters	
+		//Emitters
 			//Trigger Submit/Emit Card to Server, reveal top card of hidden white deck if submission is from hand
 			$('.hand').on('click', 'li', function(event){
 				card = $(this).text();
 				$(this).remove();
-				$('form').trigger('submit');
+				$('form').trigger('submit.card');
 
 				var $topCard = $('.deck li:first-of-type');
 				$('.hand').append('<li>'+$topCard.text()+"</li>");
 				$topCard.remove();
 			});
 
-			$('form').on('submit', function(event){
+			$('form').on('submit.card', function(event){
 				event.preventDefault();
 				card = card || $('#wildcard').val();
 				server.emit('submit card', {'username': username, 'path': path, 'card': card});
 				card = '';
 				$('#wildcard').val('');
+				ready();
 			});
+
+			$('.black').on('click', function(){
+				var winner = $(this).text();
+				if (czar == true) {
+					server.emit('czar action', {'path':path, 'choice':winner});
+					czar = false;
+				}
+			});
+
+			var disable = function(){
+				$('.hand').off('click');
+				$('form').off('submit.card');
+				$('form').on('submit', function(event){ event.preventDefault(); });
+			};
+
+			var ready = function(){
+				server.emit('player ready', {'path': path} );
+			}
 
 			//Fisher Yates Shuffle
 			var shuffle = function (array) {
