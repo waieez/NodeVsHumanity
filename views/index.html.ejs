@@ -23,12 +23,12 @@
 		<script> // perhaps put this all in a file and load it
 
 			var path = window.location.pathname,
-					server = io.connect('http://localhost'),
-					spammable = true,
-					username,
-					card,
-					czar,
-					disabled;
+				server = io.connect('http://localhost'),
+				spammable = true,
+				username,
+				card,
+				czar,
+				disabled;
 			
 		//Listeners	
 			//Handshake
@@ -39,11 +39,11 @@
 				server.emit('join', info);
 			});
 
-		  server.on('Server Message', function (message){
-		  	console.log(message);
-		  });
+		  	server.on('Server Message', function (message){
+		  		console.log(message);
+		  	});
 
-		  //Recieve and randomize white deck clientside
+		  	//Recieve and randomize white deck clientside
 			server.on('pass deck', function (deck){
 				shuffle(deck);
 				var hand = 0
@@ -71,19 +71,18 @@
 				if (disabled && spammable) {
 					setTimeout(function(){
 						spammable = true;
-						ready()
+						ready();
 					}, 1000);
 				}
 				spammable = false;
 			});
+
 			//not yet used
 			server.on('crown czar', function (data){
 				czar = true;
 				console.log(data);
 			});
 
-			//Someone Disconnects
-			//remove from everyone's object
 
 			//Populate Response
 			server.on('player answer', function (card){
@@ -126,7 +125,6 @@
 
 
 			var disable = function(){
-
 				disabled = true;
 				$('.hand').off('click');
 				$('form').off('submit.card');
@@ -153,7 +151,7 @@
 				}
 				return array;
 			}
-
+			
 		</script>
 	</body>
 </html>

@@ -1,15 +1,15 @@
 //Modules
 var express = require('express'),
-		app = express(),
-		server = require('http').Server(app),
-		io = require('socket.io')(server),
-		//events = require('events'),
-		//fs = require('fs'),
-		//request = require('request'),
-		mongo = require('./db/mongo')
-		//format = require('util').format,
-		roundRobin = require('./lib/util'),
-		tables = require('./routes/tables');
+	app = express(),
+	server = require('http').Server(app),
+	io = require('socket.io')(server),
+	//events = require('events'),
+	//fs = require('fs'),
+	//request = require('request'),
+	mongo = require('./db/mongo')
+	//format = require('util').format,
+	roundRobin = require('./lib/util'),
+	tables = require('./routes/tables');
 
 var uri = 'mongodb://onepiece:luffylaw@ds063240.mongolab.com:63240/waieez';
 //Cache on server for the decks
@@ -24,11 +24,9 @@ io.on('connection', function (client){
 	console.log('client connected...'+client);
 
 	client.on('join', function (data){
-		var username;
-		client.username = username = data.username;
-		var path = data.path;
-
-		var thisRoom = io.sockets.adapter.rooms[path];//rooms autoclose when length 0
+		var username = client.username = data.username,
+			path = data.path,
+			thisRoom = io.sockets.adapter.rooms[path];//rooms autoclose when length 0
 
 		if (!thisRoom) {
 			addReady(path, {});//path, player
@@ -81,10 +79,12 @@ app.use('/', tables);
 mongo.connect(uri, function (){
 	//init cache? server only needs to serve one deck for now
 	coll = mongo.collection('card');
+
 	coll.find({expansion:"Base", cardType: "A"},{_id: 0, text:1}).each(function (err, doc){
 		if (err) throw err.message;
 		baseA.push(doc);
 	});
+
 	coll.find({expansion:"Base", cardType: "Q"},{_id: 0, text:1}).each(function (err, doc){
 		if (err) throw err.message;
 		baseQ.push(doc);
@@ -97,12 +97,13 @@ mongo.connect(uri, function (){
 });
 
 var addReady = function(path, players){
-	var ready = {ready: players};
-	var gameRoom = mongo.collection('gameRoom');
+	var ready = {ready: players},
+		gameRoom = mongo.collection('gameRoom');
+
 	gameRoom.update( {'path': path}, {$set: ready}, {w:1, upsert:true}, function(err) {
-  	if (err) console.warn(err.message);
-  	else console.log('successfully updated');
-  });
+  		if (err) console.warn(err.message);
+  		else console.log('successfully updated');
+  	});
 };
 
 //good enough for now
