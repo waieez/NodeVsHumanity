@@ -22,17 +22,20 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script> // perhaps put this all in a file and load it
 
-			var path = window.location.pathname;
-			var server = io.connect('http://localhost');
-			var username;
-			var card;
-			var czar;
+			var path = window.location.pathname,
+					server = io.connect('http://localhost'),
+					spammable = true,
+					username,
+					card,
+					czar,
+					disabled;
 			
 		//Listeners	
 			//Handshake
 			server.on('connect', function(data){
 				username = prompt('Halt! Who Goes There?!');
 				var info = {'path': path, 'username': username};
+				//server.emit('can join?', path);
 				server.emit('join', info);
 			});
 
@@ -53,21 +56,27 @@
 					}
 				})
 				ready();
-				disable();
 			});
 
 			//Start!
 			server.on('start', function (data){
-				$('.hand').on('click');
-				$('form').on('submit.card');
+				enablePeon();
 				console.log(data);
 			});
 
 			//Wait for others
 			server.on('waiting', function (data){
 				//do stuff while waiting
+				console.log(data);
+				if (disabled && spammable) {
+					setTimeout(function(){
+						spammable = true;
+						ready()
+					}, 1000);
+				}
+				spammable = false;
 			});
-
+			//not yet used
 			server.on('crown czar', function (data){
 				czar = true;
 				console.log(data);
@@ -83,41 +92,51 @@
 
 		//Emitters
 			//Trigger Submit/Emit Card to Server, reveal top card of hidden white deck if submission is from hand
-			$('.hand').on('click', 'li', function(event){
-				card = $(this).text();
-				$(this).remove();
-				$('form').trigger('submit.card');
+			var enablePeon = function() {
 
-				var $topCard = $('.deck li:first-of-type');
-				$('.hand').append('<li>'+$topCard.text()+"</li>");
-				$topCard.remove();
-			});
+				disabled = false;
 
-			$('form').on('submit.card', function(event){
-				event.preventDefault();
-				card = card || $('#wildcard').val();
-				server.emit('submit card', {'username': username, 'path': path, 'card': card});
-				card = '';
-				$('#wildcard').val('');
-				ready();
-			});
+				$('.hand').on('click', 'li', function(event){
+					card = $(this).text();
+					$(this).remove();
+					$('form').trigger('submit.card');
 
-			$('.black').on('click', function(){
-				var winner = $(this).text();
-				if (czar == true) {
-					server.emit('czar action', {'path':path, 'choice':winner});
-					czar = false;
-				}
-			});
+					var $topCard = $('.deck li:first-of-type');
+					$('.hand').append('<li>'+$topCard.text()+"</li>");
+					$topCard.remove();
+				});
+
+				$('form').on('submit.card', function(event){
+					event.preventDefault();
+					card = card || $('#wildcard').val();
+					server.emit('submit card', {'username': username, 'path': path, 'card': card});
+					card = '';
+					$('#wildcard').val('');
+					ready();
+				});
+
+				$('.black').on('click', function(){
+					var winner = $(this).text();
+					if (czar == true) {
+						server.emit('czar action', {'path':path, 'choice':winner});
+						czar = false;
+					}
+				});
+			}
+
 
 			var disable = function(){
+
+				disabled = true;
 				$('.hand').off('click');
 				$('form').off('submit.card');
 				$('form').on('submit', function(event){ event.preventDefault(); });
 			};
 
 			var ready = function(){
-				server.emit('player ready', {'path': path} );
+				disable();
+				console.log('disabled!');
+				server.emit('player ready', {'path': path} )
 			}
 
 			//Fisher Yates Shuffle

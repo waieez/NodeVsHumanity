@@ -32,15 +32,19 @@ Build Log(?):
 	- Changed behavior to have clients recieve same answer deck, which is hidden and shuffled clientside.
 	- Hand is populated from client's deck on round start and on submit/draw event.
 
+7. Struggle
+	- Tried to have clients emit ready state to others via socket.io
+	- Tried localcache as storage for ready state
+	- Settled on MongoDB. Still Learning async control flow. For now will use nested callbacks
+
 Plans:
 
-2. Add Routes
-	- starts game when players > n || players are ready via 'ready button'
+2. MongoDB LRU
+	- Periodically Delete Rooms based on creation date (aka LRU cache?);
 
 3. Add Game Logic
 	- Black Card is randomized
-	- players emit 'draw card' event at the start of the game
-	- Server? cycles through white cards, displaying the combined black/white response in the DOM.
+	- Client? cycles through white cards, displaying the combined black/white response in the DOM.
 
 4. Finish Styling/Refactor
 	- Styled so that all mobile devices can display and interact smoothly

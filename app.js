@@ -22,17 +22,16 @@ var baseQ = [];
 io.on('connection', function (client){
 
 	console.log('client connected...'+client);
-	//need to change join to work only if not in middle of round.
-	//may need a listener/emitter that inserts new players that join in the middle of the round
+
 	client.on('join', function (data){
 		var username;
 		client.username = username = data.username;
 		var path = data.path;
 
 		var thisRoom = io.sockets.adapter.rooms[path];//rooms autoclose when length 0
+
 		if (!thisRoom) {
-			client.emit('Server Message', 'You are the Czar! Start the game when ready');
-			upsertReadyPlayers(path, []);//path, player
+			addReady(path, {});//path, player
 		}
 
 		//Join Handshake Sequence
@@ -43,20 +42,16 @@ io.on('connection', function (client){
 		client.emit('pass deck', baseA);
 		console.log('client username set: '+ client.username);
 	});
-
+	//not yet used
 	client.on('czar action', function (data){
 		io.to(data.path).emit('start', 'Game started!');
 	});
-	
+
 	client.on('player ready', function (data){
-		//var checkAllReady = function(path, player, numPlayers, successCall, failCall, playersReady){
-		//bind all the necessary values to checkall ready,
 		var numPlayers = Object.keys(io.sockets.adapter.rooms[data.path]).length;
-		var checkReady = checkAllReady.bind(null, data.path, client.id, numPlayers);
-		findAndUpdate(data.path, checkReady);
-		io.to(data.path).emit('waiting', data.players);	//needed anymore?
-		//io.to(data.path).emit('Server Message', numReady + '/' + numPlayers + ' players are ready');
+		readyGetSet(data.path, client.id, numPlayers, areReady)
 	});
+
 	//Start Round
 		//emit accepting answers --> triggers clickable clientside
 		//listen for responses (duration 10-30s) || num response = numplayers ?on new player join, refresh timer?
@@ -75,8 +70,7 @@ io.on('connection', function (client){
 		io.to(data.path).emit('player answer', data);
 	});
 
-	client.on('disconnect', function (client) {
-		console.log('goodbye...');
+	client.on('disconnect', function (path) {
 	})
 });
 
@@ -102,17 +96,8 @@ mongo.connect(uri, function (){
 	});
 });
 
-
-var findAndUpdate = function(path, callback){
-	var gameRoom = mongo.collection('gameRoom');
-	gameRoom.findOne( {'path': path}, {'_id': 0, 'ready': 1}, function (err, result){
-		if (err) console.warn(err.message);
-		callback(result.ready)
-	});
-};
-
-var upsertReadyPlayers = function(path, player){
-	var ready = {ready: player};
+var addReady = function(path, players){
+	var ready = {ready: players};
 	var gameRoom = mongo.collection('gameRoom');
 	gameRoom.update( {'path': path}, {$set: ready}, {w:1, upsert:true}, function(err) {
   	if (err) console.warn(err.message);
@@ -120,14 +105,27 @@ var upsertReadyPlayers = function(path, player){
   });
 };
 
-// only way that makes sense to me, I'll admit its rather bad.
-var checkAllReady = function(path, player, numPlayers, playersReady){
-	if (numPlayers == playersReady.length){
-		//successCall();//emit ready
-	} else {
-		playersReady.push(player);
-		console.log(playersReady);
-		upsertReadyPlayers(path, playersReady);
-		//failCall();//emit waiting
-	}
+//good enough for now
+var readyGetSet = function (path, player, numPlayers, emitter){
+	var gameRoom = mongo.collection('gameRoom');
+	gameRoom.findOne( {'path': path}, {'_id': 0, 'ready': 1}, function (err, result){
+		if (err) console.warn(err.message);
+		var players = result['ready'];
+
+		if(!players[player]) {
+			players[player] = true;
+			addReady(path, players);
+		}
+
+		emitter(path, Object.keys(players).length >= numPlayers);
+	});
 };
+
+var areReady = function (path, bool) {
+	if (bool) {
+		addReady(path, {});
+		io.to(path).emit('start', 'starting new round')
+	} else { 
+		io.to(path.emit('waiting', 'still waiting for slowpokes');
+	}
+}

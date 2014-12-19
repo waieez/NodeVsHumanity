@@ -1,28 +1,19 @@
 0 info it worked if it ends with ok
 1 verbose cli [ 'c:\\Program Files\\nodejs\\node.exe',
 1 verbose cli   'c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
-1 verbose cli   'shrinkwrap' ]
+1 verbose cli   'install' ]
 2 info using npm@1.4.28
-3 info using node@v0.10.33
-4 error Error: Problems were encountered
-4 error Please correct and try again.
-4 error missing: lru-cache@^2.5.0, required by nodevshumanity@1.0.0
-4 error     at shrinkwrap_ (c:\Program Files\nodejs\node_modules\npm\lib\shrinkwrap.js:30:15)
-4 error     at c:\Program Files\nodejs\node_modules\npm\lib\shrinkwrap.js:24:5
-4 error     at c:\Program Files\nodejs\node_modules\npm\lib\ls.js:45:30
-4 error     at c:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:130:5
-4 error     at c:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:244:14
-4 error     at cb (c:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\async-map.js:47:24)
-4 error     at c:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:244:14
-4 error     at cb (c:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\async-map.js:47:24)
-4 error     at c:\Program Files\nodejs\node_modules\npm\node_modules\read-installed\read-installed.js:244:14
-4 error     at cb (c:\Program Files\nodejs\node_modules\npm\node_modules\slide\lib\async-map.js:47:24)
+3 info using node@v0.10.34
+4 error Error: ENOENT, stat 'C:\Users\Quantitative Easing\AppData\Roaming\npm'
 5 error If you need help, you may report this *entire* log,
 5 error including the npm and node versions, at:
 5 error     <http://github.com/npm/npm/issues>
 6 error System Windows_NT 6.1.7601
-7 error command "c:\\Program Files\\nodejs\\node.exe" "c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "shrinkwrap"
+7 error command "c:\\Program Files\\nodejs\\node.exe" "c:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "install"
 8 error cwd e:\Manual Backup\My Documents\the_odin_project\nodevshumanity
-9 error node -v v0.10.33
+9 error node -v v0.10.34
 10 error npm -v 1.4.28
-11 verbose exit [ 1, true ]
+11 error path C:\Users\Quantitative Easing\AppData\Roaming\npm
+12 error code ENOENT
+13 error errno 34
+14 verbose exit [ 34, true ]
