@@ -37,13 +37,19 @@ Build Log(?):
 	- Tried localcache as storage for ready state
 	- Settled on MongoDB. Still Learning async control flow. For now will use nested callbacks
 
+8. Struggle v2
+	- Added logic for selecting czar
+	- Switched flow to accomodate czar's response
+	- Tried to refactor clientside code and ended up introducing a multiple emitter bug
+	- Currently control flow of game is mostly set. Game is rough but playable.
+
 Plans:
 
 2. MongoDB LRU
 	- Periodically Delete Rooms based on creation date (aka LRU cache?);
 
 3. Add Game Logic
-	- Black Card is randomized
+	- refactor to allow multicard Q/A's
 	- Client? cycles through white cards, displaying the combined black/white response in the DOM.
 
 4. Finish Styling/Refactor

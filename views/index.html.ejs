@@ -7,18 +7,25 @@
 		<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
 	</head>
 	<body>
-		<div class='black'>Placeholder</div>
+		<div id='black' placeholder='Black Card Goes Here'></div>
 		<div><%= 'Hello, here are your cards: '%></div>
-		<ul class ='hand'>
-		</ul>
-		<form>
-			<input id='wildcard'/><br/>
-			<input type='submit' id='submit'/>
-		</form>
-		<div class='hidden'>
-			<ul class='responses'></ul>
-			<ul class='deck'></ul>
+
+		
+		<div class='czar hidden'>
+			<p>Only the Czar Shoulde be able to see this</p>
+			<ul  id="responses"></ul>
 		</div>
+
+		<div class= 'player'>
+			<ul id='hand'>
+			</ul>
+			<form>
+				<input id='wildcard'/><br/>
+				<input type='submit' id='submit'/>
+			</form>
+		</div>
+		<ul class='hidden' id='deck'></ul>
+
 		<script src="/socket.io/socket.io.js"></script>
 		<script> // perhaps put this all in a file and load it
 
@@ -28,7 +35,7 @@
 				username,
 				card,
 				czar,
-				disabled;
+				isReady;
 			
 		//Listeners	
 			//Handshake
@@ -49,91 +56,104 @@
 				var hand = 0
 				deck.forEach(function (card){
 					if (hand < 7) {
-						$('.hand').append('<li>'+card.text+'</li>');
+						$('#hand').append('<li>'+card.text+'</li>');
 						hand++
 					} else if (card) {
-						$('.deck').append('<li>'+card.text+'</li>');
+						$('#deck').append('<li>'+card.text+'</li>');
 					}
 				})
-				ready();
 			});
 
 			//Start!
 			server.on('start', function (data){
+				console.log('starting new round');
 				enablePeon();
-				console.log(data);
+				isReady = false;
+				$('#responses').empty();
+				$('#black').text(data.text);
 			});
 
-			//Wait for others
-			server.on('waiting', function (data){
-				//do stuff while waiting
+			server.on('crown czar', function (data){
 				console.log(data);
-				if (disabled && spammable) {
+				enableCzar();
+			});
+
+			//Wait for others after emitting player choice
+			server.on('waiting', function (data){
+				console.log(data);
+				//settimeout prevents getting spammed by echoes
+				if (isReady && spammable) {
+
 					setTimeout(function(){
 						spammable = true;
 						ready();
-					}, 1000);
+					}, 20*1000);
 				}
 				spammable = false;
 			});
 
-			//not yet used
-			server.on('crown czar', function (data){
-				czar = true;
-				console.log(data);
+			server.on('pick winner', function (data) {
+				console.log(data); //handles situation where player1 joins
+				if ($('#responses:first-of-type').text() == '') {
+					server.emit('winner picked', 
+						{path: path, winner: 'nothing to select starting new game..'})
+				};
 			});
-
 
 			//Populate Response
 			server.on('player answer', function (card){
-				$('.responses').append('<li val="'+card.username+'">'+card.card+'</li>');
+				if (czar) {
+					$('#responses').append('<li val="'+card.username+'">'+card.card+'</li>');
+				}
 			});
 
 		//Emitters
 			//Trigger Submit/Emit Card to Server, reveal top card of hidden white deck if submission is from hand
+
+			//only show hand to peons
 			var enablePeon = function() {
+				$('.czar').addClass('hidden');
+				$('.player').removeClass('hidden');
+			}
 
-				disabled = false;
-
-				$('.hand').on('click', 'li', function(event){
+			$('#hand').on('click', 'li', function(event){
+				if (!isReady) { //hacky. i know
 					card = $(this).text();
 					$(this).remove();
 					$('form').trigger('submit.card');
 
-					var $topCard = $('.deck li:first-of-type');
-					$('.hand').append('<li>'+$topCard.text()+"</li>");
+					var $topCard = $('#deck li:first-of-type');
+					$('#hand').append('<li>'+$topCard.text()+"</li>");
 					$topCard.remove();
-				});
+				}
+			});
 
-				$('form').on('submit.card', function(event){
-					event.preventDefault();
+			$('form').on('submit.card', function(event){
+				event.preventDefault();
+				if (!isReady) {
 					card = card || $('#wildcard').val();
+					console.log('submit.card called');
 					server.emit('submit card', {'username': username, 'path': path, 'card': card});
+					ready();
 					card = '';
 					$('#wildcard').val('');
-					ready();
-				});
+				}
+			});
 
-				$('.black').on('click', function(){
-					var winner = $(this).text();
-					if (czar == true) {
-						server.emit('czar action', {'path':path, 'choice':winner});
-						czar = false;
-					}
-				});
+			//only show submissions to czar, hide hand
+			var enableCzar = function(){
+				czar = true;
+				$('.czar').removeClass('hidden');
+				$('.player').addClass('hidden');
 			}
 
-
-			var disable = function(){
-				disabled = true;
-				$('.hand').off('click');
-				$('form').off('submit.card');
-				$('form').on('submit', function(event){ event.preventDefault(); });
-			};
+			$('#responses').on('click', 'li', function(){
+				var winner = $(this).text();
+				server.emit('winner picked', {'path':path, 'winner':winner});
+			});
 
 			var ready = function(){
-				disable();
-				console.log('disabled!');
+				isReady = true;
 				server.emit('player ready', {'path': path} )
 			}
 

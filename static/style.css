@@ -1,11 +1,11 @@
-.black {
+#black {
 	font-size: 2em;
 	background-color: black;
 	color: white;
 }
 
 .hidden {
-	visibility: hidden;
+	display: none;
 }
 
 li:hover {
