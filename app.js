@@ -57,8 +57,10 @@ io.on('connection', function (client){
 
 	//not yet used
 	client.on('winner picked', function (data){
-		console.log(data.winner);
-		setTimeout(startGame(data.path), 2000);
+		console.log(data.winner +' won, showing everyone...' );
+		io.to(data.path).emit('show winner', data.winner);
+		var startNew = startGame.bind(null, data.path);
+		setTimeout(startNew, 3000);
 		//starts game
 	});
 
@@ -88,6 +90,8 @@ mongo.connect(uri, function (){
 	});
 });
 
+
+
 var upSertDB = function (path, toUpsert) {
 	mongo.collection('gameRoom')
 		.update( {'path': path}, {$set: toUpsert}, {w:1, upsert:true}, function(err) {
@@ -100,7 +104,7 @@ var addReady = function(path, players){
 	upSertDB(path, {ready: players});
 };
 
-//good enough for now
+
 var readyGetSet = function (path, player, currentPlayers, emitter){
 	var gameRoom = mongo.collection('gameRoom');
 	gameRoom.findOne( {'path': path}, function (err, result){
@@ -113,7 +117,7 @@ var readyGetSet = function (path, player, currentPlayers, emitter){
 			addReady(path, players);
 		}
 
-		emitter(path, Object.keys(players).length >= currentPlayers.length);
+		emitter(path, Object.keys(players).length >= currentPlayers.length - 1);
 	});
 };
 
@@ -134,18 +138,26 @@ var setTimesCzar = function (path, playerId, times) {
 }
 
 var crownCzar = function (path, players) {
-	var gameRoom = mongo.collection('gameRoom');
-	gameRoom.findOne( {'path': path},{_id: 0, czar: 1},function (err, result){
 
-		players.sort(function ( a, b ){
-			return result.czar[a] - result.czar[b];
-		});
-		//sorts array of players by times as czar asc
-		//picks randomly from first half of array.
-		czar = players[Math.floor( (Math.random()*players.length)/2 )];
+	mongo.collection('gameRoom').findOne( {'path': path},{_id: 0, czar: 1},function (err, result){
+
+		if (players.length > 1){
+			players.sort(function ( a, b ){
+				return result.czar[a] - result.czar[b];
+			});
+			//sorts array of players by times as czar asc
+			//picks randomly from first half of array.
+			czar = players[Math.floor( (Math.random()*players.length)/2 )];
+		} else {
+			upSertDB(path, { czar: {} } ); //cleans the room of old data
+			czar = players[0];
+			console.log(czar + 'is the first one here, let him hold the crown for now..')
+		}
+
 		var timesCzar = result.czar[czar] + 1;
 		setTimesCzar(path, czar, timesCzar);
 		io.to(czar).emit('crown czar', 'You are the Czar!');
+		console.log(czar +' crowned as the new czar');
 	});
 }
 
@@ -155,17 +167,3 @@ var startGame = function(path){
 	addReady(path, {});
 	crownCzar(path, currentPlayers);
 }
-
-
-// emit to czar 'YOU ARE CZAR'
-// make czar active, hide his cards, show the inc responses when all ready
-// make players active,
-// set a timer for responses
-// show everyone all the responses
-// czar can pick best one
-// show winner to everyone
-// restart
-
-//tofix
-
-//czar function now working anymore.

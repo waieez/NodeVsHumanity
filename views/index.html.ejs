@@ -14,6 +14,7 @@
 		<div class='czar hidden'>
 			<p>Only the Czar Shoulde be able to see this</p>
 			<ul  id="responses"></ul>
+			<button id='newGame'>Draw a new Black Card</button>
 		</div>
 
 		<div class= 'player'>
@@ -62,6 +63,7 @@
 						$('#deck').append('<li>'+card.text+'</li>');
 					}
 				})
+				ready();
 			});
 
 			//Start!
@@ -79,6 +81,7 @@
 			});
 
 			//Wait for others after emitting player choice
+			
 			server.on('waiting', function (data){
 				console.log(data);
 				//settimeout prevents getting spammed by echoes
@@ -92,12 +95,20 @@
 				spammable = false;
 			});
 
+
 			server.on('pick winner', function (data) {
-				console.log(data); //handles situation where player1 joins
+				console.log(data);
 				if ($('#responses:first-of-type').text() == '') {
 					server.emit('winner picked', 
-						{path: path, winner: 'nothing to select starting new game..'})
+						{path: path, winner: $('.black').text()}) 
 				};
+			});
+
+			//Czar picks a winner and emits the choen card to all
+
+			server.on('show winner', function (winner){
+				$('#black').text(winner);
+				console.log('winner is :'+winner);
 			});
 
 			//Populate Response
@@ -148,6 +159,11 @@
 			}
 
 			$('#responses').on('click', 'li', function(){
+				var winner = $(this).text();
+				server.emit('winner picked', {'path':path, 'winner':winner});
+			});
+
+			$('#newGame').on('click', function(){
 				var winner = $(this).text();
 				server.emit('winner picked', {'path':path, 'winner':winner});
 			});
