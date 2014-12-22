@@ -122,7 +122,7 @@
 			//Trigger Submit/Emit Card to Server, reveal top card of hidden white deck if submission is from hand
 
 			//only show hand to peons
-			var enablePeon = function() {
+			function enablePeon () {
 				$('.czar').addClass('hidden');
 				$('.player').removeClass('hidden');
 			}
@@ -152,7 +152,7 @@
 			});
 
 			//only show submissions to czar, hide hand
-			var enableCzar = function(){
+			function enableCzar (){
 				czar = true;
 				$('.czar').removeClass('hidden');
 				$('.player').addClass('hidden');
@@ -168,13 +168,13 @@
 				server.emit('winner picked', {'path':path, 'winner':winner});
 			});
 
-			var ready = function(){
+			function ready (){
 				isReady = true;
 				server.emit('player ready', {'path': path} )
 			}
 
 			//Fisher Yates Shuffle
-			var shuffle = function (array) {
+			function shuffle (array) {
 				var m = array.length, t, i;
 				// While there remain elements to shuffle…
 				while (m) {
