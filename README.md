@@ -43,6 +43,11 @@ Build Log(?):
 	- Tried to refactor clientside code and ended up introducing a multiple emitter bug
 	- Currently control flow of game is mostly set. Game is rough but playable.
 
+9. Heroku
+	- Not as straightforward as implied.
+	- IT'S ALIVE~!
+	- A bit of styling
+
 Plans:
 
 2. MongoDB LRU
@@ -50,7 +55,7 @@ Plans:
 
 3. Add Game Logic
 	- refactor to allow multicard Q/A's
-	- Client? cycles through white cards, displaying the combined black/white response in the DOM.
+	- score tracker
 
 4. Finish Styling/Refactor
 	- Styled so that all mobile devices can display and interact smoothly

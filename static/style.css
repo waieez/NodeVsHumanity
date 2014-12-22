@@ -1,4 +1,12 @@
+html {
+	text-align: center;
+	font-family: Helvetica;
+	font-weight: bold;
+}
+
 #black {
+	padding: .25em;
+	height: 33%;
 	font-size: 2em;
 	background-color: black;
 	color: white;
@@ -8,6 +16,17 @@
 	display: none;
 }
 
-li:hover {
-	background-color: red;
+ul {
+	padding-left: 0;
+}
+
+li {
+	padding-top: .25em;
+	padding-bottom: .25em;
+	font-size: 1.5em;
+	list-style-type: none;
+}
+
+li:nth-child(even){
+	background-color: #F8F8F8;
 }
