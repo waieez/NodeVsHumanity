@@ -8,7 +8,7 @@ var express = require('express'),
 	//request = require('request'),
 	mongo = require('./db/mongo')
 	//format = require('util').format,
-	roundRobin = require('./lib/util'),
+	format = require('./lib/util'),
 	tables = require('./routes/tables');
 
 var uri = 'mongodb://onepiece:luffylaw@ds063240.mongolab.com:63240/waieez';
@@ -85,7 +85,7 @@ mongo.connect(uri, function (){
 	});
 
 	console.log('connected to mongo @ ' + uri);
-	server.listen(3000, function(){
+	server.listen(process.env.PORT || 3000, function(){
 		console.log('listen @ 3000..');	
 	});
 });

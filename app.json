@@ -1,0 +1,6 @@
+{
+  "name": "Node vs Humanity ",
+  "description": "A CAH app for Node.js using Express 4",
+  "repository": "https://github.com/waieez/nodevshumanity",
+  "keywords": ["node", "cards against humanity"]
+}
