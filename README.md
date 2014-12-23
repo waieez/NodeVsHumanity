@@ -48,15 +48,22 @@ Build Log(?):
 	- IT'S ALIVE~!
 	- A bit of styling
 
+10. Refactor, Add Features
+	- Moved Clientside script into own js file
+	- Last Player to leave triggers room cleanup
+	- Begin implementation of new Data Structure to better represent game data.
+	- Implement Scores
+
 Plans:
 
 2. MongoDB LRU
 	- Periodically Delete Rooms based on creation date (aka LRU cache?);
 
 3. Add Game Logic
-	- score display and tracker
+	- perhaps check ready status based on number of responses czar has, or use $inc to increment numReady
 
 5. NiceToHaves
+	- Notification for new players to understand game flow.
 	- Private Tables ('socketio room password authentication/validation')
 	- Custom settings
 	- Welcome page

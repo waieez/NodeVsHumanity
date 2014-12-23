@@ -19,14 +19,17 @@ io.on('connection', function (client){
 
 	client.on('join', function (data){
 		var username = client.username = data.username,
-			path = data.path,
+			path = client.path = data.path,
 			thisRoom = io.sockets.adapter.rooms[path];
 
 		if (!thisRoom) {
 			addReady(path, {});//clears the list of ready players
 		}
-		//New player has never been Czar
-		setTimesCzar(path, client.id, 0);
+		//Set New Player
+		var players = {},
+			player = 'players.'+client.id
+			players[player] = {czar: 0, score: 0, username: username}
+		updateDB(path, players)
 		//Join Handshake Sequence
 		client.join(path);
 
@@ -47,11 +50,24 @@ io.on('connection', function (client){
 	});
 
 	client.on('winner picked', function (data){
-		io.to(data.path).emit('show winner', data.winner);
+		io.to(data.path).emit('show winner', data);
 		var startNew = startGame.bind(null, data.path);
 		//starts new game
-		setTimeout(startNew, 3000);
+		setTimeout(startNew, 4000);
 	});
+
+	client.on('update score', function (data){
+		var currentPlayers = Object.keys(io.sockets.adapter.rooms[data.path]);
+		incPlayerValue(data.path, client.id, 'score', 1);
+		getScores(data.path, currentPlayers)
+	})
+
+	client.on('disconnect', function (){
+		var thisRoom = io.sockets.adapter.rooms[client.path],
+			room = {"players":{}},
+			path = client.path;
+		if (!thisRoom) { updateDB(path, room) };
+	})
 
 });
 
@@ -79,21 +95,23 @@ mongo.connect(uri, function (){
 	});
 });
 
-var upSertDB = function (path, toUpsert) {
+var updateDB = function (path, toUpdate, operator) {
+	var obj = {},
+		operator = operator || "$set";
+	obj[operator] = toUpdate;
 	mongo.collection('gameRoom')
-		.update( {'path': path}, {$set: toUpsert}, {w:1, upsert:true}, function(err) {
+		.update( {'path': path}, obj, {w:1, upsert:true}, function(err) {
   			if (err) console.warn(err.message);
   		});
 }
 
 var addReady = function(path, players){
-	upSertDB(path, {ready: players});
+	updateDB(path, {ready: players});
 };
 
 
 var readyGetSet = function (path, player, currentPlayers, emitter){
-	var gameRoom = mongo.collection('gameRoom');
-	gameRoom.findOne( {'path': path}, function (err, result){
+	mongo.collection('gameRoom').findOne( {'path': path}, function (err, result){
 		if (err) console.warn(err.message);
 		
 		var players = result['ready'];
@@ -116,32 +134,24 @@ var areReady = function (path, bool) {// decouple czar from reg players to maint
 	}
 }
 
-var setTimesCzar = function (path, playerId, times) {
-	var timesCzar = {},
-		player = 'czar.'+playerId;
-	timesCzar[player] = times;
-	upSertDB(path, timesCzar);
-}
-
 var crownCzar = function (path, players) {
 
-	mongo.collection('gameRoom').findOne( {'path': path},{_id: 0, czar: 1},function (err, result){
+	mongo.collection('gameRoom').findOne( {'path': path},{"_id": 0, "players": 1},function (err, result){
 
 		if (players.length > 1){
 			players.sort(function ( a, b ){
-				return result.czar[a] - result.czar[b];
+
+				return result["players"][a]["czar"] - result["players"][b]["czar"];
 			});
-			//sorts array of players by times as czar asc
+			//sorts array of players by times as "czar" asc
 			//picks randomly from first half of array.
-			czar = players[Math.floor( (Math.random()*players.length)/2 )];
+			player = players[Math.floor( (Math.random()*players.length)/2 )];
 		} else {
-			upSertDB(path, { czar: {} } ); //cleans the room of old data
-			czar = players[0];
+			player = players[0];
 		}
 
-		var timesCzar = result.czar[czar] + 1;
-		setTimesCzar(path, czar, timesCzar);
-		io.to(czar).emit('crown czar', 'You are the Czar!');
+		incPlayerValue(path, player, 'czar', 1);
+		io.to(player).emit('crown czar', 'You are the Czar!');
 	});
 }
 
@@ -150,4 +160,30 @@ var startGame = function(path){
 	io.to(path).emit('start', baseQ[Math.floor(Math.random()*baseQ.length)]);
 	addReady(path, {});
 	crownCzar(path, currentPlayers);
+}
+
+var incPlayerValue = function (path, playerId, key, value) {
+//Data Structure {players: {playerid: {czar: 0, username: username, score: 0}}}
+	var players = {},
+		playerKey = 'players.'+playerId+'.'+key;
+	players[playerKey] = value;
+	updateDB(path, players, '$inc');
+}
+
+var getScores = function (path, players) {
+	var player;
+	var scores = [];
+	mongo.collection('gameRoom').findOne( {'path': path},{_id: 0, players: 1},function (err, result){
+
+		if (players.length > 1){
+			players.sort(function ( a, b ){
+				return result["players"][a]["score"] - result["players"][b]["score"];
+			});
+			for (var i = players.length - 1; i >= 0; i--) {
+				player = result["players"][players[i]];
+				scores.push([player.username, player.score]);
+				if (scores.length == players.length) { io.to(path).emit('send scores', scores); }
+			};
+		}
+	});
 }
