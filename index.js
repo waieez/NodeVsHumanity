@@ -3,11 +3,7 @@ var express = require('express'),
 	app = express(),
 	server = require('http').Server(app),
 	io = require('socket.io')(server),
-	//events = require('events'),
-	//fs = require('fs'),
-	//request = require('request'),
 	mongo = require('./db/mongo')
-	//format = require('util').format,
 	format = require('./lib/util'),
 	tables = require('./routes/tables');
 
@@ -21,20 +17,16 @@ var baseQ = [];
 //IO event driven DOM manipulation
 io.on('connection', function (client){
 
-	console.log('client connected...'+client);
-
 	client.on('join', function (data){
 		var username = client.username = data.username,
 			path = data.path,
-			thisRoom = io.sockets.adapter.rooms[path];//rooms autoclose when length 0
+			thisRoom = io.sockets.adapter.rooms[path];
 
 		if (!thisRoom) {
-			addReady(path, {});//path, player
+			addReady(path, {});//clears the list of ready players
 		}
-
 		//New player has never been Czar
 		setTimesCzar(path, client.id, 0);
-
 		//Join Handshake Sequence
 		client.join(path);
 
@@ -45,7 +37,6 @@ io.on('connection', function (client){
 	});
 
 	client.on('submit card', function (data){
-		console.log(data.path, data.username, data.card);
 		io.to(data.path).emit('player answer', data);
 	});
 
@@ -55,13 +46,11 @@ io.on('connection', function (client){
 		//emits pick winner to czar
 	});
 
-	//not yet used
 	client.on('winner picked', function (data){
-		console.log(data.winner +' won, showing everyone...' );
 		io.to(data.path).emit('show winner', data.winner);
 		var startNew = startGame.bind(null, data.path);
+		//starts new game
 		setTimeout(startNew, 3000);
-		//starts game
 	});
 
 });
@@ -79,7 +68,7 @@ mongo.connect(uri, function (){
 		baseA.push(doc);
 	});
 
-	coll.find({expansion:"Base", cardType: "Q"},{_id: 0, text:1}).each(function (err, doc){
+	coll.find({expansion:"Base", cardType: "Q"},{_id: 0, numAnswers: 1, text:1}).each(function (err, doc){
 		if (err) throw err.message;
 		baseQ.push(doc);
 	});
@@ -90,13 +79,10 @@ mongo.connect(uri, function (){
 	});
 });
 
-
-
 var upSertDB = function (path, toUpsert) {
 	mongo.collection('gameRoom')
 		.update( {'path': path}, {$set: toUpsert}, {w:1, upsert:true}, function(err) {
   			if (err) console.warn(err.message);
-  			//else console.log('successfully updated');
   		});
 }
 
@@ -151,13 +137,11 @@ var crownCzar = function (path, players) {
 		} else {
 			upSertDB(path, { czar: {} } ); //cleans the room of old data
 			czar = players[0];
-			console.log(czar + 'is the first one here, let him hold the crown for now..')
 		}
 
 		var timesCzar = result.czar[czar] + 1;
 		setTimesCzar(path, czar, timesCzar);
 		io.to(czar).emit('crown czar', 'You are the Czar!');
-		console.log(czar +' crowned as the new czar');
 	});
 }
 

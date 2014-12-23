@@ -32,10 +32,14 @@ li:nth-child(even){
 }
 
 input, button {
+	display: inline;
 	padding-top: .25em;
 	padding-bottom: .25em;
-	width: 50%;
 	height: 20%;
 	font-size: 1.5em;
 	margin: .25em;
+}
+
+#wildcard {
+	width: 50%;
 }

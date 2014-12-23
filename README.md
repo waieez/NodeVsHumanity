@@ -54,14 +54,12 @@ Plans:
 	- Periodically Delete Rooms based on creation date (aka LRU cache?);
 
 3. Add Game Logic
-	- refactor to allow multicard Q/A's
-	- score tracker
-
-4. Finish Styling/Refactor
-	- Styled so that all mobile devices can display and interact smoothly
+	- score display and tracker
 
 5. NiceToHaves
 	- Private Tables ('socketio room password authentication/validation')
-	- Democracy/Czar
+	- Custom settings
+	- Welcome page
+	- Democracy
 
 6. Play

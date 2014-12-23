@@ -3,7 +3,7 @@
 	<head>
 		<title>Node vs Humanity</title>
 		<script src="jquery.js"></script>
-		<link rel="stylesheet" media="(max-width: 1200px)" href="style.css">
+		<link rel="stylesheet" media="(max-width: 1920px)" href="style.css">
     <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />  
 		<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
 	</head>
@@ -11,15 +11,15 @@
 		<div id='black'>Please wait for round to start.</div>
 		<div class='czar hidden'>
 			<ul  id="responses"></ul>
-			<button id='newGame'>Draw a new Black Card</button>
+			<button id='newGame'>Start New Round</button>
 		</div>
 
 		<div class= 'player'>
 			<ul id='hand'>
 			</ul>
 			<form>
-				<input id='wildcard'/><br/>
-				<input type='submit' id='submit' value="Wildcard!"/>
+				<input id='wildcard'/>
+				<input type='submit' id='submit' value="Wild!"/>
 			</form>
 		</div>
 		<ul class='hidden' id='deck'></ul>
@@ -33,6 +33,8 @@
 				username,
 				card,
 				czar,
+				numAnswers,
+				answers = [],
 				isReady;
 			
 		//Listeners	
@@ -68,6 +70,8 @@
 				console.log('starting new round');
 				enablePeon();
 				isReady = false;
+				answers = [];
+				numAnswers = data.numAnswers
 				$('#responses').empty();
 				$('#black').text(data.text);
 			});
@@ -111,7 +115,8 @@
 			//Populate Response
 			server.on('player answer', function (card){
 				if (czar) {
-					$('#responses').append('<li val="'+card.username+'">'+card.card+'</li>');
+					cards = (card.card.length > 1) ? card.card.join('  <br>') : card.card[0];
+					$('#responses').append('<li val="'+card.username+'">'+cards+'</li>');
 				}
 			});
 
@@ -125,7 +130,7 @@
 			}
 
 			$('#hand').on('click', 'li', function(event){
-				if (!isReady) { //hacky. i know
+				if (!isReady && answers.length != numAnswers) { //hacky. i know
 					card = $(this).text();
 					$(this).remove();
 					$('form').trigger('submit.card');
@@ -140,9 +145,14 @@
 				event.preventDefault();
 				if (!isReady) {
 					card = card || $('#wildcard').val();
-					console.log('submit.card called');
-					server.emit('submit card', {'username': username, 'path': path, 'card': card});
-					ready();
+					answers.push(card)
+					console.log(answers);
+					if (answers.length == numAnswers) {
+						server.emit('submit card', 
+							{'username': username, 'path': path, 'card': answers});
+						ready();	
+					}
+
 					card = '';
 					$('#wildcard').val('');
 				}
