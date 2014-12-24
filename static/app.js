@@ -20,7 +20,7 @@ $(document).ready(function(){
 	});
 
 		server.on('Server Message', function (message){
-			console.log(message);
+			notify('alert', message);
 		});
 
 		//Recieve and randomize white deck clientside
@@ -49,8 +49,9 @@ $(document).ready(function(){
 		$('#winner').text("");
 	});
 
-	server.on('crown czar', function (data){
+	server.on('crown czar', function (message){
 		enableCzar();
+		notify("alert", message);
 	});
 
 	//Populate Response
@@ -173,5 +174,11 @@ $(document).ready(function(){
 		console.log('prevented submission');
 	})
 	*/
+	function notify (type, message) {
+		console.log(message);
+		var block = "<div class='notify'>"+message+"</div>"
+		$(block).appendTo("."+type).fadeIn(1000);
+		setTimeout(function(){ $("."+type).children().first().remove() }, 5000 )
+	}
 
 });

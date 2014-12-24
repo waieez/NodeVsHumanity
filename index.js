@@ -44,7 +44,7 @@ io.on('connection', function (client){
 
 	client.on('player ready', function (data){
 		var currentPlayers = Object.keys(io.sockets.adapter.rooms[data.path]);
-		readyGetSet(data.path, client.id, currentPlayers, areReady)
+		readyGetSet(data.path, client.id, currentPlayers, areReady);
 		//emits pick winner to czar
 	});
 

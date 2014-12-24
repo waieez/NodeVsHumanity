@@ -66,7 +66,6 @@ Plans:
 
 1. To Do
 	- Implement Dropdown menu
-	- Setup notifications
 	- Implement room sharing?
 	- Iplement deck option
 	- Refactor server to query decks used in room to pass to client
@@ -79,7 +78,6 @@ Plans:
 	- perhaps check ready status based on number of responses czar has, or use $inc to increment numReady
 
 5. NiceToHaves
-	- Notification for new players to understand game flow.
 	- Private Tables ('socketio room password authentication/validation')
 	- Custom settings
 	- Welcome page

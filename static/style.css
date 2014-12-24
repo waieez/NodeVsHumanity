@@ -27,12 +27,27 @@ ul {
 }
 
 li {
-	padding-top: .5em;
-	padding-bottom: .5em;
+	padding-top: .25em;
+	padding-bottom: .25em;
 	font-size: 1.5em;
 	list-style-type: none;
 }
 
 #hand li:nth-child(odd), #czar li:nth-child(odd){
 	background-color: white;
-};
+}
+
+.notify {
+	background-color: #373737;
+	color: white;
+	font-weight: none;
+	font-size: 1em;
+	max-width: 10em;
+	min-width: 3em;
+	min-height: 1.5em;
+	position: absolute;
+	border-radius: 2px;
+	padding: .5em;
+	bottom: 3em;
+	right: .5em;
+}
