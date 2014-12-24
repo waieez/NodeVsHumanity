@@ -59,6 +59,7 @@ Build Log(?):
 	- Browse around for hours looking for the right behavior and theme.
 	- Figure out how to have express load hosted libraries or dl a smaller footprint of the mobile jquery
 	- Refactor code to not use DOM as storage
+	- Likely not able to implement options on time. For now just play with all cards in E1-5.
 
 Plans:
 
@@ -68,7 +69,7 @@ Plans:
 	- Implement room sharing?
 	- Iplement deck option
 	- Refactor server to query decks used in room to pass to client
-	- If client has copy of question deck, serverside need only emit a random numer, client will handle indexing
+	- If client has copy of question deck, serverside need only emit a random number, client will handle indexing
 
 2. MongoDB LRU
 	- Periodically Delete Rooms based on creation date (aka LRU cache?);

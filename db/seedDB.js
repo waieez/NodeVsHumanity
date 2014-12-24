@@ -33,4 +33,38 @@ mongo.connect(uri, function(){
     "_text": "text",
     "_expansion": "expansion"
 }
+
+
+{
+	expansions: [
+
+	//Official
+		"Base",
+		"CAHe2",
+		"CAHe3",
+		"CAHe4",
+		"CAHe5",
+		"christmas2013",
+		"90s",
+
+	//??
+		"CAHweeaboo",
+		"GOT",
+		"CAHxmas",
+		"CAHgrognards",
+		"NEIndy",
+		"NSFH",
+		"Image1",
+		"PAXP13",
+		"PAXE13",
+		"HACK",
+		"Box",
+		"Gallifrey",
+		"Alternia",
+		"Ladies Against Humanity",
+		"Canadian Conversion Kit",
+		"Nobilis Reed",
+	]
+}
+
 */

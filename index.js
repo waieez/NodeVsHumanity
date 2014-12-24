@@ -78,12 +78,12 @@ mongo.connect(uri, function (){
 	//init cache? server only needs to serve one deck for now
 	coll = mongo.collection('card');
 
-	coll.find({expansion:"Base", cardType: "A"},{_id: 0, text:1}).each(function (err, doc){
+	coll.find({expansion: {"$in": ["Base", "CAHe2", "CAHe3", "CAHe4", "CAHe5"]}, cardType: "A"},{_id: 0, text:1}).each(function (err, doc){
 		if (err) throw err.message;
 		baseA.push(doc);
 	});
 
-	coll.find({expansion:"Base", cardType: "Q"},{_id: 0, numAnswers: 1, text:1}).each(function (err, doc){
+	coll.find({expansion: {"$in": ["Base", "CAHe2", "CAHe3", "CAHe4", "CAHe5"]}, cardType: "Q"},{_id: 0, numAnswers: 1, text:1}).each(function (err, doc){
 		if (err) throw err.message;
 		baseQ.push(doc);
 	});

@@ -26,14 +26,14 @@ $(document).ready(function(){
 		//Recieve and randomize white deck clientside
 	server.on('pass deck', function (deck){
 		shuffle(deck);
-		var hand = 0;
+		var count = 0;
 		deck.forEach(function (card){
-			if (hand < 7) {
+			if (count < 7) {
 				$('#hand').append('<li>'+card.text+'</li>');
-				hand++
 			} else if (card) {
 				answerDeck.push(card.text);
 			}
+			count++
 		})
 		ready();
 	});
@@ -158,5 +158,17 @@ $(document).ready(function(){
 		}
 		return array;
 	}
+
+	/*
+	//NEW STUFF
+	$('#settings').on('click', function(){
+		//$("#decks").toggleClass('hidden');
+	})
+
+	$('#decks').on('click', function(event){
+		event.preventDefault();
+		console.log('prevented submission');
+	})
+	*/
 
 });
