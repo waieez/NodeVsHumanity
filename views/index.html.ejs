@@ -2,17 +2,21 @@
 <html>
 	<head>
 		<title>Node vs Humanity</title>
-		<script src="jquery.js"></script>
+		<script src="jquery-1.11.2.js"></script>
+		<script src="jquery.mobile-1.4.5.js"></script>
 		<link rel="stylesheet" media="(max-width: 1920px)" href="style.css">
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />  
+		<link rel="stylesheet" media="(max-width: 1920px)" href="jquery.mobile-1.4.5.css" />
+		
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
 		<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
 	</head>
 	<body>
+		<header data-role="header" data-theme="b">Node vs Humanity</header>
 
 		<div id='black'>Please wait for round to start.</div>
 
 		<div class='czar hidden'>
-			<ul  id="responses"></ul>
+			<ul id="responses"></ul>
 			<button id='newGame'>Start New Round</button>
 		</div>
 		
@@ -20,13 +24,39 @@
 			<ul id='hand'>
 			</ul>
 			<form>
-				<input id='wildcard'/>
-				<input type='submit' id='submit' value="Wild!"/>
+				<input id='wildcard' placeholder="Submit Your Own Answer Instead!"/>
 			</form>
 		</div>
-		<ul class='hidden' id='deck'></ul>
-		<ul id='scores'><ul>
+
+		<div data-role="popup" id="popupMenu" data-theme="b">
+  		<ul id='scores' data-role="listview" data-inset="true" style="min-width:210px;">
+      </ul>
+		</div>
+
+		<div data-role="popup" id="optionsMenu" data-theme="b">
+  		<ul id='scores' data-role="listview" data-inset="true" style="min-width:210px;">
+  			<li>In Progress</li>
+      </ul>
+		</div>
+
+		<footer data-role="footer" data-theme="b" data-position="fixed" data-tap-toggle="false" data-id="footer">
+			<nav data-role="navbar">
+				<ul>
+					<li>
+						<a href="#popupMenu" data-rel="popup" data-transition="slideup">
+							Scores
+						</a>
+					</li>
+
+					<li>
+						<a href="#optionsMenu" data-rel="popup" data-transition="slideup">Options</a>
+					</li>
+				</ul>
+			</nav>
+		</footer>
+
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="app.js"></script>
 	</body>
 </html>
+

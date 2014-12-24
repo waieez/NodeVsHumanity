@@ -5,7 +5,7 @@ html {
 }
 
 #black {
-	padding: .25em;
+	padding: .5em;
 	height: 33%;
 	font-size: 2em;
 	background-color: black;
@@ -21,25 +21,12 @@ ul {
 }
 
 li {
-	padding-top: .25em;
-	padding-bottom: .25em;
+	padding-top: .5em;
+	padding-bottom: .5em;
 	font-size: 1.5em;
 	list-style-type: none;
 }
 
-li:nth-child(even){
-	background-color: #F8F8F8;
-}
-
-input, button {
-	display: inline;
-	padding-top: .25em;
-	padding-bottom: .25em;
-	height: 20%;
-	font-size: 1.5em;
-	margin: .25em;
-}
-
-#wildcard {
-	width: 50%;
-}
+#hand li:nth-child(odd), #czar li:nth-child(odd){
+	background-color: white;
+};

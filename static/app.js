@@ -5,6 +5,7 @@ var path = window.location.pathname,
 	card,
 	czar,
 	numAnswers,
+	answerDeck = [],
 	answers = [],
 	isReady;
 
@@ -23,13 +24,13 @@ server.on('connect', function(data){
 	//Recieve and randomize white deck clientside
 server.on('pass deck', function (deck){
 	shuffle(deck);
-	var hand = 0
+	var hand = 0;
 	deck.forEach(function (card){
 		if (hand < 7) {
 			$('#hand').append('<li>'+card.text+'</li>');
 			hand++
 		} else if (card) {
-			$('#deck').append('<li>'+card.text+'</li>');
+			answerDeck.push(card.text);
 		}
 	})
 	ready();
@@ -46,23 +47,7 @@ server.on('start', function (data){
 });
 
 server.on('crown czar', function (data){
-	console.log(data);
 	enableCzar();
-});
-
-//Wait for others after emitting player choice
-
-server.on('waiting', function (data){
-	console.log(data);
-	//settimeout prevents getting spammed by echoes
-	if (isReady && spammable) {
-
-		setTimeout(function(){
-			spammable = true;
-			ready();
-		}, 20*1000);
-	}
-	spammable = false;
 });
 
 //Populate Response
@@ -74,7 +59,7 @@ server.on('player answer', function (card){
 });
 
 server.on('pick winner', function (data) {
-	console.log(data);
+	//Autostarts a new game
 	if ($('#responses:first-of-type').text() == '') {
 		server.emit('winner picked', 
 			{'path': path, 'winner': '', 'text': $('.black').text()}) 
@@ -85,10 +70,7 @@ server.on('pick winner', function (data) {
 //Winner triggers server to update score
 server.on('show winner', function (data){
 	$('#black').text(data.text);
-	console.log('winner is: '+data.winner);
-	console.log('winner is: '+data.text);
 	if (username == data.winner) {
-		console.log('You won!');
 		server.emit('update score', {'path': path, 'username': username});
 	}
 });
@@ -115,9 +97,8 @@ $('#hand').on('click', 'li', function(event){
 		$(this).remove();
 		$('form').trigger('submit.card');
 
-		var $topCard = $('#deck li:first-of-type');
-		$('#hand').append('<li>'+$topCard.text()+"</li>");
-		$topCard.remove();
+		var topCard = answerDeck.shift();
+		$('#hand').append('<li>'+topCard+"</li>");
 	}
 });
 
@@ -126,7 +107,6 @@ $('form').on('submit.card', function(event){
 	if (!isReady) {
 		card = card || $('#wildcard').val();
 		answers.push(card)
-		console.log(answers);
 		if (answers.length == numAnswers) {
 			server.emit('submit card', 
 				{'username': username, 'path': path, 'card': answers});
@@ -148,7 +128,6 @@ function enableCzar (){
 $('#responses').on('click', 'li', function(){
 	var winner = $(this).attr('id');
 	var text = $(this).text();
-	console.log(text);
 	server.emit('winner picked', {'path':path, 'winner':winner, 'text': text});
 });
 
@@ -160,7 +139,7 @@ $('#newGame').on('click', function(){
 
 function ready (){
 	isReady = true;
-	server.emit('player ready', {'path': path} )
+	server.emit('player ready', {'path': path} );
 }
 
 //Fisher Yates Shuffle

@@ -54,7 +54,21 @@ Build Log(?):
 	- Begin implementation of new Data Structure to better represent game data.
 	- Implement Scores
 
+11. Jquery Mobile?
+	- Too lazy/late to implement custom mobile interface.
+	- Browse around for hours looking for the right behavior and theme.
+	- Figure out how to have express load hosted libraries or dl a smaller footprint of the mobile jquery
+	- Refactor code to not use DOM as storage
+
 Plans:
+
+1. To Do
+	- Implement Dropdown menu
+	- Setup notifications
+	- Implement room sharing?
+	- Iplement deck option
+	- Refactor server to query decks used in room to pass to client
+	- If client has copy of question deck, serverside need only emit a random numer, client will handle indexing
 
 2. MongoDB LRU
 	- Periodically Delete Rooms based on creation date (aka LRU cache?);

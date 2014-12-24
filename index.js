@@ -3,7 +3,7 @@ var express = require('express'),
 	app = express(),
 	server = require('http').Server(app),
 	io = require('socket.io')(server),
-	mongo = require('./db/mongo')
+	mongo = require('./db/mongo'),
 	format = require('./lib/util'),
 	tables = require('./routes/tables');
 
@@ -27,16 +27,15 @@ io.on('connection', function (client){
 		}
 		//Set New Player
 		var players = {},
-			player = 'players.'+client.id
-			players[player] = {czar: 0, score: 0, username: username}
-		updateDB(path, players)
+			player = 'players.'+client.id;
+			players[player] = {czar: 0, score: 0, username: username};
+		updateDB(path, players);
 		//Join Handshake Sequence
 		client.join(path);
 
 		var msg = client.username + ' has joined '+path;
 		io.to(path).emit('Server Message', msg);
 		client.emit('pass deck', baseA);
-		console.log('client username set: '+ client.username);
 	});
 
 	client.on('submit card', function (data){
@@ -60,14 +59,14 @@ io.on('connection', function (client){
 		var currentPlayers = Object.keys(io.sockets.adapter.rooms[data.path]);
 		incPlayerValue(data.path, client.id, 'score', 1);
 		getScores(data.path, currentPlayers)
-	})
+	});
 
 	client.on('disconnect', function (){
 		var thisRoom = io.sockets.adapter.rooms[client.path],
 			room = {"players":{}},
 			path = client.path;
 		if (!thisRoom) { updateDB(path, room) };
-	})
+	});
 
 });
 
@@ -99,15 +98,14 @@ var updateDB = function (path, toUpdate, operator) {
 	var obj = {},
 		operator = operator || "$set";
 	obj[operator] = toUpdate;
-	mongo.collection('gameRoom')
-		.update( {'path': path}, obj, {w:1, upsert:true}, function(err) {
+	mongo.collection('gameRoom').update( {'path': path}, obj, {w:1, upsert:true}, function(err) {
   			if (err) console.warn(err.message);
   		});
 }
 
 var addReady = function(path, players){
 	updateDB(path, {ready: players});
-};
+}
 
 
 var readyGetSet = function (path, player, currentPlayers, emitter){
@@ -123,15 +121,11 @@ var readyGetSet = function (path, player, currentPlayers, emitter){
 
 		emitter(path, Object.keys(players).length >= currentPlayers.length - 1);
 	});
-};
+}
 
 //emitter
 var areReady = function (path, bool) {// decouple czar from reg players to maintain flow
-	if (bool) {//start new round
-		io.to(path).emit('pick winner', 'Czar, please pick a winner')
-	} else { 
-		io.to(path).emit('waiting', 'still waiting for slowpokes');
-	}
+	if (bool) { io.to(path).emit('pick winner', 'Czar, please pick a winner'); }
 }
 
 var crownCzar = function (path, players) {
@@ -171,8 +165,8 @@ var incPlayerValue = function (path, playerId, key, value) {
 }
 
 var getScores = function (path, players) {
-	var player;
-	var scores = [];
+	var player,
+		scores = [];
 	mongo.collection('gameRoom').findOne( {'path': path},{_id: 0, players: 1},function (err, result){
 
 		if (players.length > 1){
@@ -183,7 +177,7 @@ var getScores = function (path, players) {
 				player = result["players"][players[i]];
 				scores.push([player.username, player.score]);
 				if (scores.length == players.length) { io.to(path).emit('send scores', scores); }
-			};
+			}
 		}
 	});
 }
