@@ -12,6 +12,12 @@ html {
 	color: white;
 }
 
+#winner {
+	padding: .5em;
+	height: 33%;
+	font-size: 2em;
+}
+
 .hidden {
 	display: none;
 }

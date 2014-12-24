@@ -46,6 +46,7 @@ $(document).ready(function(){
 		numAnswers = data.numAnswers
 		$('#responses').empty();
 		$('#black').text(data.text);
+		$('#winner').text("");
 	});
 
 	server.on('crown czar', function (data){
@@ -71,7 +72,9 @@ $(document).ready(function(){
 	//Czar picks a winner and emits the choen card to all
 	//Winner triggers server to update score
 	server.on('show winner', function (data){
-		$('#black').text(data.text);
+		$('#winner').text(data.text);
+		$('.player').addClass('hidden');
+		$('.czar').addClass('hidden');
 		if (username == data.winner) {
 			server.emit('update score', {'path': path, 'username': username});
 		}

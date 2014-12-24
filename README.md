@@ -60,6 +60,7 @@ Build Log(?):
 	- Figure out how to have express load hosted libraries or dl a smaller footprint of the mobile jquery
 	- Refactor code to not use DOM as storage
 	- Likely not able to implement options on time. For now just play with all cards in E1-5.
+	- Changed behavoir so that Black and Winner are shown together.
 
 Plans:
 
