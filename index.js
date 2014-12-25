@@ -118,7 +118,7 @@ var readyGetSet = function (path, player, currentPlayers, emitter){
 			players[player] = true;
 			addReady(path, players);
 		}
-
+		
 		emitter(path, Object.keys(players).length >= currentPlayers.length - 1);
 	});
 }

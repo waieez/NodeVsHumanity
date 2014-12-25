@@ -14,14 +14,21 @@ $(document).ready(function(){
 	//Listeners	
 	//Handshake
 	server.on('connect', function(data){
-		username = prompt('Halt! Who Goes There?!');
-		var info = {'path': path, 'username': username};
-		server.emit('join', info);
+
 	});
 
-		server.on('Server Message', function (message){
-			notify('alert', message);
-		});
+	$('#username form').on('submit', function(event){
+		event.preventDefault();
+		username = escapeHtml( $("input").val() );
+		
+		var info = {'path': path, 'username': username};
+		server.emit('join', info);
+		$('#username').addClass('hidden');
+	});
+
+	server.on('Server Message', function (message){
+		notify('alert', message);
+	});
 
 		//Recieve and randomize white deck clientside
 	server.on('pass deck', function (deck){
@@ -45,8 +52,8 @@ $(document).ready(function(){
 		answers = [];
 		numAnswers = data.numAnswers
 		$('#responses').empty();
-		$('#black').text(data.text);
-		$('#winner').text("");
+		$('#black').html(data.text);
+		$('#winner').html("");
 	});
 
 	server.on('crown czar', function (message){
@@ -58,7 +65,8 @@ $(document).ready(function(){
 	server.on('player answer', function (card){
 		if (czar) {
 			cards = (card.card.length > 1) ? card.card.join('  <br>') : card.card[0];
-			$('#responses').append('<li id="'+card.username+'">'+cards+'</li>');
+
+			$('#responses').append( $('<li id="'+card.username+'"></li>').html(cards) );
 		}
 	});
 
@@ -73,7 +81,7 @@ $(document).ready(function(){
 	//Czar picks a winner and emits the choen card to all
 	//Winner triggers server to update score
 	server.on('show winner', function (data){
-		$('#winner').text(data.text);
+		$('#winner').html(data.text);
 		$('.player').addClass('hidden');
 		$('.czar').addClass('hidden');
 		if (username == data.winner) {
@@ -111,7 +119,7 @@ $(document).ready(function(){
 	$('form').on('submit.card', function(event){
 		event.preventDefault();
 		if (!isReady) {
-			card = card || $('#wildcard').val();
+			card = card || escapeHtml( $('#wildcard').val() );
 			answers.push(card)
 			if (answers.length == numAnswers) {
 				server.emit('submit card', 
@@ -133,13 +141,13 @@ $(document).ready(function(){
 
 	$('#responses').on('click', 'li', function(){
 		var winner = $(this).attr('id');
-		var text = $(this).text();
+		var text = $(this).html();
 		server.emit('winner picked', {'path':path, 'winner':winner, 'text': text});
 	});
 
 	$('#newGame').on('click', function(){
 		var winner = $(this).attr('id');
-		var text = $(this).text();
+		var text = $(this).html();
 		server.emit('winner picked', {'path':path, 'winner':winner, 'text': text});
 	});
 
@@ -163,22 +171,14 @@ $(document).ready(function(){
 		return array;
 	}
 
-	/*
-	//NEW STUFF
-	$('#settings').on('click', function(){
-		//$("#decks").toggleClass('hidden');
-	})
-
-	$('#decks').on('click', function(event){
-		event.preventDefault();
-		console.log('prevented submission');
-	})
-	*/
 	function notify (type, message) {
 		console.log(message);
-		var block = "<div class='notify'>"+message+"</div>"
+		var block = $('<div class=notify></div>').html(message);
 		$(block).appendTo("."+type).fadeIn(1000);
 		setTimeout(function(){ $("."+type).children().first().remove() }, 5000 )
 	}
 
+	function escapeHtml (text) {
+		return $('<div/>').text(text).html();
+	}
 });

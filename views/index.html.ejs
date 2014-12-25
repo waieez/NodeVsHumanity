@@ -12,6 +12,14 @@
 	<body>
 		<header data-role="header" data-theme="b">Node vs Humanity</header>
 
+		<div id="username">
+			<form >
+				<input type="text" placeholder="Username">
+				<input type="submit" value="Join">
+			</form>
+		</div>
+
+
 		<div id='black'>Please wait for round to start.</div>
 
 		<div id='winner'></div>
@@ -19,20 +27,6 @@
 		<div class='czar hidden'>
 			<ul id="responses"></ul>
 			<button id='newGame'>Start New Round</button>
-		<!--
-			<div class="ui-field-contain">
-				<select name="select-custom-19[]" id="select-custom-19" multiple="multiple" data-native-menu="false">
-					<option>Select Decks</option>
-					<option value = 'Base'>Base</option>
-					<option value = "CAHe2">Expansion 2</option>
-					<option value = "CAHe3">Expansion 3</option>
-					<option value = "CAHe4">Expansion 4</option>
-					<option value = "CAHe5">Expansion 5</option>
-					<option value = "christmas2013">Christmas 2013</option>
-					<option value = "90s"> 90's </option>
-				</select>
-			</div>
-		-->
 		</div>
 		
 		<div class= 'player'>
@@ -49,14 +43,7 @@
   			<ul id='scores' data-role="listview" data-inset="true" style="min-width:210px;">
   			</ul>
 		</div>
-
-		<div data-role="popup" id="optionsMenu" data-theme="b">
-	  		<ul id='scores' data-role="listview" data-inset="true" style="min-width:210px;">
-	  			<li>In Progress</li>
-	      	</ul>
-		</div>
 		
-
 		<footer data-role="footer" data-theme="b" data-position="fixed" data-tap-toggle="false" data-id="footer">
 			<nav data-role="navbar">
 				<ul>
@@ -64,10 +51,6 @@
 						<a href="#popupMenu" data-rel="popup" data-transition="slideup">
 							Scores
 						</a>
-					</li>
-
-					<li>
-						<a href="#optionsMenu" data-rel="popup" data-transition="slideup">Options</a>
 					</li>
 				</ul>
 			</nav>
