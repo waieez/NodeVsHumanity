@@ -53,6 +53,7 @@ li {
 }
 
 #username {
+	border: 2px solid #f1f1f1;
 	border-radius: 2px;
 	background-color: white;
 	width:15em;
