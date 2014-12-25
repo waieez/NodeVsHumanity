@@ -1,7 +1,7 @@
 var mongo = require('./mongo');
 var master = require('./cards.json');
 
-var uri = 'mongodb://onepiece:luffylaw@ds063240.mongolab.com:63240/waieez';
+var uri = 'get your own';
 
 //alternative is to just import the file directly 
 

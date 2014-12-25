@@ -7,7 +7,7 @@ var express = require('express'),
 	format = require('./lib/util'),
 	tables = require('./routes/tables');
 
-var uri = 'mongodb://onepiece:luffylaw@ds063240.mongolab.com:63240/waieez';
+var uri = 'get your own';
 //Cache on server for the decks
 var coll;
 var gameRoom;
