@@ -17,7 +17,7 @@ $(document).ready(function(){
 
 	});
 
-	$('#username form').on('submit', function(event){
+	$('#username form').on('submit.username', function(event){
 		event.preventDefault();
 		username = escapeHtml( $("input").val() );
 		
@@ -109,17 +109,17 @@ $(document).ready(function(){
 		if (!isReady && answers.length != numAnswers) { //hacky. i know
 			card = $(this).text();
 			$(this).remove();
-			$('form').trigger('submit.card');
+			$('.player form').trigger('submit.card');
 
 			var topCard = answerDeck.shift();
 			$('#hand').append('<li>'+topCard+"</li>");
 		}
 	});
 
-	$('form').on('submit.card', function(event){
+	$('.player form').on('submit.card', function(event){
 		event.preventDefault();
 		if (!isReady) {
-			card = card || escapeHtml( $('#wildcard').val() );
+			card = card || escapeHtml($('#wildcard').val());
 			answers.push(card)
 			if (answers.length == numAnswers) {
 				server.emit('submit card', 
